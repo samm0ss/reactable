@@ -1013,7 +1013,7 @@ window.ReactDOM["default"] = window.ReactDOM;
             _get(Object.getPrototypeOf(Table.prototype), 'constructor', this).call(this, props);
 
             this.state = {
-                currentPage: 0,
+                currentPage: this.props.currentPage | 0,
                 currentSort: {
                     column: null,
                     direction: this.props.defaultSortDescending ? -1 : 1
@@ -1247,6 +1247,14 @@ window.ReactDOM["default"] = window.ReactDOM;
                 }
             }
         }, {
+            key: 'updateCurrentPage',
+            value: function updateCurrentPage(nextPage) {
+                if (nextPage !== this.state.currentPage) {
+                    this.setState({ currentPage: nextPage });
+                }
+                console.log("yass");
+            }
+        }, {
             key: 'componentWillMount',
             value: function componentWillMount() {
                 this.initialize(this.props);
@@ -1257,6 +1265,7 @@ window.ReactDOM["default"] = window.ReactDOM;
             key: 'componentWillReceiveProps',
             value: function componentWillReceiveProps(nextProps) {
                 this.initialize(nextProps);
+                this.updateCurrentPage(nextProps.currentPage);
                 this.updateCurrentSort(nextProps.sortBy);
                 this.sortByCurrentSort();
                 this.filterBy(nextProps.filterBy);

@@ -1015,6 +1015,138 @@ describe('Reactable', function() {
             });
         });
 
+        // describe('specifying the default currentPage', () => {
+        //     before( () => {
+        //         ReactDOM.render(
+        //             <Reactable.Table className="table" id="table" data={[
+        //                 {'Name': 'Griffin Smith', 'Age': '18'},
+        //                 {'Age': '23', 'Name': 'Lee Salminen'},
+        //                 {'Age': '28', 'Position': 'Developer'},
+        //                 {'Name': 'Griffin Smith', 'Age': '18'},
+        //                 {'Age': '23', 'Name': 'Test Person'},
+        //                 {'Name': 'Ian Zhang', 'Age': '28', 'Position': 'Developer'},
+        //                 {'Name': 'Griffin Smith', 'Age': '18', 'Position': 'Software Developer'},
+        //                 {'Age': '23', 'Name': 'Lee Salminen'},
+        //                 {'Age': '28', 'Position': 'Developer'},
+        //             ]} itemsPerPage={2} currentPage={2} />,
+        //             ReactableTestUtils.testNode()
+        //         );
+        //     });
+
+        //     after(ReactableTestUtils.resetTestEnvironment);
+
+        //     it('default page', () => {
+        //         var activePage = $('#table tbody.reactable-pagination ' +
+        //             'a.reactable-page-button.reactable-current-page');
+        //         expect(activePage.length).to.equal(1);
+        //         expect(activePage).to.have.text('3');
+        //     });
+        // });
+
+        describe('new', function() {
+            before(function() {
+
+              var ParentComponent = React.createClass({
+                getInitialState: function() {
+                  return {currentPage: 2}
+                },
+
+                handleChange(event) {
+                    this.setState({currentPage: event.target.value});
+                },
+
+                render () {
+                  return ( 
+                    <div>
+                    <input type="text" ref="PageInput" id="PageInput" value={this.state.currentPage} onChange={this.handleChange}/>
+                        <Reactable.Table className="table" id="table" data={[
+                            {'Name': 'Griffin Smith', 'Age': '18'},
+                            {'Age': '23', 'Name': 'Lee Salminen'},
+                            {'Age': '28', 'Position': 'Developer'},
+                            {'Name': 'Griffin Smith', 'Age': '18'},
+                            {'Age': '23', 'Name': 'Test Person'},
+                            {'Name': 'Ian Zhang', 'Age': '28', 'Position': 'Developer'},
+                            {'Name': 'Griffin Smith', 'Age': '18', 'Position': 'Software Developer'},
+                            {'Age': '23', 'Name': 'Lee Salminen'},
+                            {'Age': '28', 'Position': 'Developer'},
+                        ]} itemsPerPage={2} currentPage={this.state.currentPage} />
+                    </div>
+                  );
+                }
+              })
+              this.component = ReactDOM.render(React.createElement(ParentComponent), ReactableTestUtils.testNode());
+            });
+
+
+            // <input type="text" ref="inputPage" id="inputPage" value={this.state.currentPage} onChange={this.handleChange}/>
+            after(ReactableTestUtils.resetTestEnvironment);
+
+            it('default page', function() {
+                var $activePage = $('#table tbody.reactable-pagination ' +
+                    'a.reactable-page-button.reactable-current-page');
+                expect($activePage.length).to.equal(1);
+                expect($activePage).to.have.text('3');
+
+                var node = this.component.refs.PageInput
+                node.value = 1;
+                ReactTestUtils.Simulate.change(PageInput);
+                ReactableTestUtils.expectRowText(0, ['28', 'lorem ipsum', 'old x']);
+                expect($activePage.length).to.equal(1);
+                expect($activePage).to.have.text('2');
+                // ReactTestUtils.Simulate.change(inputPage);
+                // this.component.setState({currentPage: 1})
+                // ReactDOM.render(<ParentComponent currentPage={1} />,  ReactableTestUtils.testNode())
+                // this.component .setState({currentPage: 1})
+                // let $activePage2 = $('#table tbody.reactable-pagination ' +
+                //     'a.reactable-page-button.reactable-current-page');
+                // ReactTestUtils.Simulate.change(PageInput);
+                // var $activePage2 = $('#table tbody.reactable-pagination a.reactable-page-button.reactable-current-page');
+                // expect(activePage.length).to.equal(1);
+                // expect($activePage2).to.have.text('2');
+            });
+
+
+            // it('default page2', function() {
+            //     // var node = this.component.refs.inputPage
+            //     // node.value = 1;
+            //     // ReactTestUtils.Simulate.change(inputPage);
+            //     let activePage = $('#table tbody.reactable-pagination ' +
+            //         'a.reactable-page-button.reactable-current-page');
+            //     console.log(activePage.length)
+            //     // expect(activePage.length).to.equal(1);
+            //     expect(activePage).to.have.text('2');
+            // });
+
+            // context('from the function', function() {
+            //     // before(function() {
+            //     //     this.component.filterBy('york');
+            //     // });
+            //     it('default page2', () => {
+            //         var node = this.component.refs.currentPage;
+            //         node.value = 2;
+            //         var activePage = $('#table tbody.reactable-pagination ' +
+            //             'a.reactable-page-button.reactable-current-page');
+            //         expect(activePage.length).to.equal(1);
+            //         expect(activePage).to.have.text('2');
+            //     });
+            // });
+            // it('filters using the custom filter on specified columns', function() {
+            //     ReactableTestUtils.expectRowText(0, ['Alaska', 'bacon', 'new']);
+            //     ReactableTestUtils.expectRowText(1, ['New Mexico', 'lorem ipsum', 'old x']);
+            //     ReactableTestUtils.expectRowText(2, ['Colorado', 'lol', 'renewed x']);
+            //     var $builtInFilter = $('#table thead tr.reactable-filterer input.reactable-filter-input');
+            //     expect($builtInFilter).to.have.value('l');
+
+            //     // Simulate changing input on parent component and re-rendering Reactable.Table with new props.
+            //     var node = this.component.refs.customFilterInput;
+            //     node.value = 'exico';
+            //     ReactTestUtils.Simulate.change(customFilterInput);
+
+            //     ReactableTestUtils.expectRowText(0, ['New Mexico', 'lorem ipsum', 'old x']);
+            //     expect($builtInFilter).to.have.value('exico');
+            // });
+        });
+
         describe('onPageChange hook', () => {
             let currentPage
             const callback = page => {
@@ -2151,6 +2283,93 @@ describe('Reactable', function() {
                     expect($filter).to.have.value('l');
                 });
             });
+
+            // describe('specifying the default currentPage', () => {
+            //     before( () => {
+            //         ReactDOM.render(
+            //             <Reactable.Table className="table" id="table" data={[
+            //                 {'Name': 'Griffin Smith', 'Age': '18'},
+            //                 {'Age': '23', 'Name': 'Lee Salminen'},
+            //                 {'Age': '28', 'Position': 'Developer'},
+            //                 {'Name': 'Griffin Smith', 'Age': '18'},
+            //                 {'Age': '23', 'Name': 'Test Person'},
+            //                 {'Name': 'Ian Zhang', 'Age': '28', 'Position': 'Developer'},
+            //                 {'Name': 'Griffin Smith', 'Age': '18', 'Position': 'Software Developer'},
+            //                 {'Age': '23', 'Name': 'Lee Salminen'},
+            //                 {'Age': '28', 'Position': 'Developer'},
+            //             ]} itemsPerPage={2} currentPage={2} />,
+            //             ReactableTestUtils.testNode()
+            //         );
+            //     });
+
+            //     after(ReactableTestUtils.resetTestEnvironment);
+
+            //     it('default page', () => {
+            //         var activePage = $('#table tbody.reactable-pagination ' +
+            //             'a.reactable-page-button.reactable-current-page');
+            //         expect(activePage.length).to.equal(1);
+            //         expect(activePage).to.have.text('3');
+            //     });
+            // });
+
+            // context('from filterBy prop', function() {
+            //     before(function() {
+            //       ReactableTestUtils.resetTestEnvironment();
+
+            //       var ParentComponent = React.createClass({
+            //         getInitialState: function() {
+            //           return {customFilterText: 'l'}
+            //         },
+
+            //         handleChange(event) {
+            //           this.setState({customFilterText: event.target.value});
+            //         },
+
+            //         render () {
+            //           return ( 
+            //             <div className="parentTable">
+            //                 <input type="text" ref="customFilterInput" id="customFilterInput" value={this.state.customFilterText} onChange={this.handleChange}/>
+            //                 <Reactable.Table className="table" data={[
+            //                     {'Name': 'Griffin Smith', 'Age': '18'},
+            //                     {'Age': '23', 'Name': 'Lee Salminen'},
+            //                     {'Age': '28', 'Position': 'Developer'},
+            //                     {'Name': 'Griffin Smith', 'Age': '18'},
+            //                     {'Age': '23', 'Name': 'Test Person'},
+            //                     {'Name': 'Ian Zhang', 'Age': '28', 'Position': 'Developer'},
+            //                     {'Name': 'Griffin Smith', 'Age': '18', 'Position': 'Software Developer'},
+            //                     {'Age': '23', 'Name': 'Lee Salminen'},
+            //                     {'Age': '28', 'Position': 'Developer'},
+            //             ]} itemsPerPage={2} currentPage={2} />,
+            //             </div>  
+            //           );
+            //         }
+            //       })
+            //       this.component = ReactDOM.render(React.createElement(ParentComponent), ReactableTestUtils.testNode());
+            //     });
+
+            //     it('default page', () => {
+            //         var activePage = $('#table tbody.reactable-pagination ' +
+            //             'a.reactable-page-button.reactable-current-page');
+            //         expect(activePage.length).to.equal(1);
+            //         expect(activePage).to.have.text('3');
+            //     });
+
+            //     // it('filters using the custom filter on specified columns', function() {
+            //     //     ReactableTestUtils.expectRowText(0, ['Alaska', 'bacon', 'new']);
+            //     //     ReactableTestUtils.expectRowText(1, ['New Mexico', 'lorem ipsum', 'old x']);
+            //     //     ReactableTestUtils.expectRowText(2, ['Colorado', 'lol', 'renewed x']);
+            //     //     var $builtInFilter = $('#table thead tr.reactable-filterer input.reactable-filter-input');
+            //     //     expect($builtInFilter).to.have.value('l');
+
+            //     //     // Simulate changing input on parent component and re-rendering Reactable.Table with new props.
+            //     //     var node = this.component.refs.customFilterInput;
+            //     //     node.value = 'exico';
+            //     //     ReactTestUtils.Simulate.change(customFilterInput);
+
+            //     //     ReactableTestUtils.expectRowText(0, ['New Mexico', 'lorem ipsum', 'old x']);
+            //     //     expect($builtInFilter).to.have.value('exico');
+            //     // });
+            // });
 
             context('from filterBy prop', function() {
                 before(function() {
